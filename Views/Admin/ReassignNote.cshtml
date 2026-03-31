@@ -1,0 +1,30 @@
+@model ReassignNoteViewModel
+@{
+    ViewData["Title"] = "Reassign Note";
+}
+
+<h2>Reassign Note</h2>
+
+<div class="mb-3">
+    <strong>Note:</strong> @Model.NoteTitle<br />
+    <strong>Current Owner:</strong> @Model.CurrentOwnerName
+</div>
+
+<form asp-action="ReassignNote" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="NoteId" />
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+    <div class="mb-3">
+        <label asp-for="NewOwnerId" class="form-label">New Owner</label>
+        <select asp-for="NewOwnerId" class="form-select">
+            <option value="">-- Select User --</option>
+            @foreach (var user in Model.AllUsers)
+            {
+                <option value="@user.Id">@user.UserName (@user.Email)</option>
+            }
+        </select>
+        <span asp-validation-for="NewOwnerId" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Reassign</button>
+    <a asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
+</form>

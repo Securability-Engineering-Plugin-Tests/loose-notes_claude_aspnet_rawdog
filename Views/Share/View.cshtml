@@ -1,0 +1,59 @@
+@model Note
+@{
+    ViewData["Title"] = Model.Title;
+    Layout = "_Layout";
+}
+
+<div class="mb-3">
+    <h2>@Model.Title</h2>
+    <small class="text-muted">
+        By @(Model.User?.UserName ?? "Unknown") &middot;
+        @Model.CreatedAt.ToString("MMMM d, yyyy")
+    </small>
+    <span class="badge bg-info ms-2">Shared Note</span>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <pre class="mb-0" style="white-space: pre-wrap; font-family: inherit;">@Model.Content</pre>
+    </div>
+</div>
+
+@if (Model.Attachments.Any())
+{
+    <div class="mb-4">
+        <h5>Attachments</h5>
+        <ul class="list-group">
+            @foreach (var att in Model.Attachments)
+            {
+                <li class="list-group-item">
+                    <i class="bi bi-paperclip"></i> @att.FileName
+                    <small class="text-muted ms-2">(@att.FileSize.ToString("N0") bytes)</small>
+                </li>
+            }
+        </ul>
+    </div>
+}
+
+@if (Model.Ratings.Any())
+{
+    <div>
+        <h5>Ratings (@Model.Ratings.Count)</h5>
+        <p>Average: <strong>@Model.Ratings.Average(r => r.Stars).ToString("F1")</strong> / 5</p>
+        @foreach (var rating in Model.Ratings.OrderByDescending(r => r.UpdatedAt))
+        {
+            <div class="card mb-2">
+                <div class="card-body py-2">
+                    <div class="d-flex justify-content-between">
+                        <strong>@(rating.User?.UserName ?? "Unknown")</strong>
+                        <span>@string.Concat(Enumerable.Repeat("★", rating.Stars))</span>
+                    </div>
+                    @if (!string.IsNullOrEmpty(rating.Comment))
+                    {
+                        <p class="mb-0 mt-1 small">@rating.Comment</p>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}
